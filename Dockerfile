@@ -46,6 +46,8 @@ RUN pip install -r /tmp/requirements.txt
 ARG DJANGO_SECRET_KEY
 ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 
+ARG DEBUG=0
+
 RUN python manage.py vendor_pull
 RUN python manage.py collectstatic --noinput
 

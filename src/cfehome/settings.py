@@ -14,7 +14,7 @@ SECRET_KEY=config("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 
-DEBUG = True
+DEBUG = config("DJANGO_DEBUG", cast=bool)
 
 ALLOWED_HOSTS = [
     ".railway.app"
@@ -80,7 +80,7 @@ DATABASES = {
     }
 }
 
-DATABASE_URL = config("DATABASE_URL", cast=str)
+DATABASE_URL = config("DATABASE_URL", default=None)
 
 if DATABASE_URL is not None:
     import dj_database_url

@@ -43,6 +43,9 @@ COPY ./src /code
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
 
+ARG DJANGO_SECRET_KEY
+ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+
 RUN python manage.py vendor_pull
 RUN python manage.py collectstatic --noinput
 

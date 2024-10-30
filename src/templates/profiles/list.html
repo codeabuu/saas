@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block head_title %}Users - {{ block.super }}{% endblock head_title %}
+
+{% block content %}
+<h1 class="text-lg font-medium">Users</h1>
+
+{% if perms.auth and perms.auth.view_user %}
+    <ul>
+        {% for instance in object_list %}
+            <li><a href="{% url 'profiles' instance.username %}">{{ instance.username }}</a></li>
+        {% empty %}
+            <li>No users found.</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div>Permission not allowed</div>
+{% endif %}
+
+{% endblock content %}

@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'slippers',
     'profiles',
+    'subscriptions',
 ]
 
 MIDDLEWARE = [

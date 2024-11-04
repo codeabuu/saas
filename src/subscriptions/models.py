@@ -34,28 +34,29 @@ class UserSubscription(models.Model):
 
 
 def user_sub_post_save(sender, instance, *args, **kwargs):
-    user_sub_instance = instance
-    user = user_sub_instance.user
-    subscription_obj = user_sub_instance.subscription
+    user = instance.user
+    subscription_obj = instance.subscription
     groups_ids = []
+
     if subscription_obj is not None:
         groups = subscription_obj.groups.all()
         groups_ids = groups.values_list('id', flat=True)
 
     if not ALLOW_CUSTOM_GROUPS:
+        # Directly set user's groups to match subscription groups
         user.groups.set(groups_ids)
     else:
+        # Collect all groups linked to active subscriptions excluding the current one
         subs_qs = Subscription.objects.filter(active=True)
-        if subscription_obj is not None:
+        if subscription_obj:
             subs_qs = subs_qs.exclude(id=subscription_obj.id)
-        subs_groups = subs_qs.values_list("groups__id", flat=True)
-        sub_groups_set = set(subs_groups)
-        #group_ids = groups.values_list('id', flat=True)
-        current_groups = user.groups.all().values_list("id", flat=True)
-        groups_ids_set = set(groups_ids)
-        current_groups_set = set(current_groups) - sub_groups_set
-        final_groups_ids = list(groups_ids_set | current_groups_set)
+        subs_groups = set(subs_qs.values_list("groups__id", flat=True))
 
+        # Calculate final groups set
+        current_groups = set(user.groups.all().values_list("id", flat=True))
+        final_groups_ids = list((set(groups_ids) | current_groups) - subs_groups)
+
+        # Update the user's groups with the final list
         user.groups.set(final_groups_ids)
 
 

@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'slippers',
     'profiles',
     'subscriptions',
+    'customers',
 ]
 
 MIDDLEWARE = [

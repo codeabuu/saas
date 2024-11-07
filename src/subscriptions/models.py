@@ -70,3 +70,41 @@ def user_sub_post_save(sender, instance, *args, **kwargs):
 
 
 post_save.connect(user_sub_post_save, sender=UserSubscription)
+
+
+class SubscriptionPrice(models.Model):
+    """sub price=stripe price"""
+    class IntervalChoices(models.TextChoices):
+        MONTHLY = 'month', 'Monthly'
+        YEARLY = 'year', 'Yearly'
+    Subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
+    stripe_id = models.CharField(max_length=120, null=True, blank=True)
+    interval = models.CharField(max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=20.00)
+
+    @property
+    def stripe_currency(self):
+        return 'USD'
+    @property
+    def stripe_price(self):
+        """remove decs"""
+        return self.price * 100
+
+    @property
+    def product_stripe_id(self):
+        if not self.Subscription:
+            return None
+        return self.Subscription.stripe_id
+    
+    def save(self, *args, **kwargs):
+        if (self.stripe_id is None and self.product_stripe_id is not None):
+            stripe_id = helpers.billing.create_price(
+                currency=self.stripe_currency,
+                unit_amount=self.stripe_price,
+                interval=self.interval,
+                product = self.product_stripe_id,
+                metadata={"subscription_plan_price_id": self.id},
+                raw=False
+            )
+            self.stripe_id = stripe_id
+        super().save(*args, **kwargs)

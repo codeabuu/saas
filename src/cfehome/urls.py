@@ -2,11 +2,13 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import home_view, about_view, pw_protected_view, user_only_view, staff_only_view
 from auth import views as auth_views
+from subscriptions import views as subscription_views
 
 urlpatterns = [
     path("", home_view, name='home'), #index page -> root page
-    path("login/", auth_views.login_view, name='account_login'),
-    path("register/", auth_views.register_view, name='account_signup'),
+    # path("login/", auth_views.login_view, name='account_login'),
+    # path("register/", auth_views.register_view, name='account_signup'),
+    path("pricing", subscription_views.subscription_price_view, name='pricing'),
     path("about/", about_view),
     path("hello-world/", home_view),
     path("hello-world.html", home_view),

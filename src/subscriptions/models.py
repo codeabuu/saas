@@ -24,10 +24,16 @@ class Subscription(models.Model):
     })
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
 
+    order = models.IntegerField(default=-1, help_text='order on django pricing page')
+    featured = models.BooleanField(default=True, help_text='Featured on django pricing page')
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
+        ordering = ["order", "featured", "-updated"]
         permissions = SUBSCRIPTION_PERMISSIONS
 
     def save(self, *args, **kwargs):
@@ -77,10 +83,17 @@ class SubscriptionPrice(models.Model):
     class IntervalChoices(models.TextChoices):
         MONTHLY = 'month', 'Monthly'
         YEARLY = 'year', 'Yearly'
-    Subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
+    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
     stripe_id = models.CharField(max_length=255, null=True, blank=True)
     interval = models.CharField(max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=20.00)
+    order = models.IntegerField(default=-1, help_text='order on django pricing page')
+    featured = models.BooleanField(default=True, help_text='Featured on django pricing page')
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'featured', '-updated']
 
     @property
     def stripe_currency(self):
@@ -92,9 +105,9 @@ class SubscriptionPrice(models.Model):
 
     @property
     def product_stripe_id(self):
-        if not self.Subscription:
+        if not self.subscription:
             return None
-        return self.Subscription.stripe_id
+        return self.subscription.stripe_id
     
     def save(self, *args, **kwargs):
         if (self.stripe_id is None and self.product_stripe_id is not None):
@@ -107,3 +120,9 @@ class SubscriptionPrice(models.Model):
             )
             self.stripe_id = stripe_id
         super().save(*args, **kwargs)
+        if self.featured and self.subscription:
+            qs = SubscriptionPrice.objects.filter(
+                subscription = self.subscription,
+                interval = self.interval
+            ).exclude(id=self.id)
+            qs.update(featured=False)

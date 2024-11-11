@@ -78,7 +78,7 @@ class SubscriptionPrice(models.Model):
         MONTHLY = 'month', 'Monthly'
         YEARLY = 'year', 'Yearly'
     Subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
-    stripe_id = models.CharField(max_length=120, null=True, blank=True)
+    stripe_id = models.CharField(max_length=255, null=True, blank=True)
     interval = models.CharField(max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=20.00)
 
@@ -88,7 +88,7 @@ class SubscriptionPrice(models.Model):
     @property
     def stripe_price(self):
         """remove decs"""
-        return self.price * 100
+        return int(self.price * 100)
 
     @property
     def product_stripe_id(self):
@@ -104,7 +104,6 @@ class SubscriptionPrice(models.Model):
                 interval=self.interval,
                 product = self.product_stripe_id,
                 metadata={"subscription_plan_price_id": self.id},
-                raw=False
             )
             self.stripe_id = stripe_id
         super().save(*args, **kwargs)

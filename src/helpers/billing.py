@@ -41,7 +41,8 @@ def create_price(currency="USD",
     response = stripe.Price.create(
         currency=currency,
         unit_amount=unit_amount,
-        recurring={"interval": "month"},
+        recurring={"interval": interval},
         product=product,
         metadata=metadata
     )
+    return response.id

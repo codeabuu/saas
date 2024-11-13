@@ -28,7 +28,7 @@ class Customer(models.Model):
 
 def allauth_user_signed_up_handler(request, user, *args, **kwargs):
     email = user.email
-    Customer.objects.create(user=user, init_email=email, init_email_confirmed = False)
+    Customer.objects.create(user=user, init_email=email, init_email_confirmed=False)
 
 allauth_user_signed_up.connect(allauth_user_signed_up_handler)
 

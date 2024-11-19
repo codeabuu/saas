@@ -45,8 +45,8 @@ class Subscription(models.Model):
         return [x.strip() for x in self.features.split("\n")]
     
     def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
+        is_new = self.pk is None   # Check if the instance is new
+        super().save(*args, **kwargs)  #Save the instance to generate an ID
 
         if is_new and not self.stripe_id:
             stripe_id = helpers.billing.create_product(
@@ -159,3 +159,8 @@ class SubscriptionPrice(models.Model):
             )
             self.stripe_id = stripe_id
             super().save(update_fields=["stripe_id"])
+        if self.featured and self.subscription:
+            SubscriptionPrice.objects.filter(
+                subscription=self.subscription,
+                interval=self.interval
+            ).exclude(id=self.id).update(featured=False)

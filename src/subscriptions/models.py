@@ -45,10 +45,17 @@ class Subscription(models.Model):
         return [x.strip() for x in self.features.split("\n")]
     
     def save(self, *args, **kwargs):
-        if not self.stripe_id:
-            stripe_id = helpers.billing.create_product(name=self.name, metadata={"subscription_plan_id": self.id}, raw=False)
-            self.stripe_id = stripe_id
+        is_new = self.pk is None
         super().save(*args, **kwargs)
+
+        if is_new and not self.stripe_id:
+            stripe_id = helpers.billing.create_product(
+                name=self.name,
+                metadata={"subscription_plan_id": self.id},
+                raw=False
+            )
+            self.stripe_id = stripe_id
+            super().save(update_fields=["stripe_id"])
 
 class UserSubscription(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -110,18 +117,18 @@ class SubscriptionPrice(models.Model):
     def display_features_list(self):
         if not self.subscription:
             return []
-        return self.subscription.get_features_as_list
+        return self.subscription.get_features_as_list()
     
     @property
     def display_sub_name(self):
         if not self.subscription:
-            return "Unnamed Subscription"
+            return "Plan"
         return self.subscription.name
     
     @property
     def display_sub_title(self):
         if not self.subscription:
-            return "title"
+            return "Plan"
         return self.subscription.subtitle
     
     @property
@@ -139,19 +146,16 @@ class SubscriptionPrice(models.Model):
         return self.subscription.stripe_id
     
     def save(self, *args, **kwargs):
-        if (self.stripe_id is None and self.product_stripe_id is not None):
+        is_new = self.pk is None  # Check if the instance is new
+        super().save(*args, **kwargs)  # Save the instance to generate an ID
+
+        if is_new and not self.stripe_id and self.product_stripe_id is not None:
             stripe_id = helpers.billing.create_price(
                 currency=self.stripe_currency,
                 unit_amount=self.stripe_price,
                 interval=self.interval,
-                product = self.product_stripe_id,
+                product=self.product_stripe_id,
                 metadata={"subscription_plan_price_id": self.id},
             )
             self.stripe_id = stripe_id
-        super().save(*args, **kwargs)
-        if self.featured and self.subscription:
-            qs = SubscriptionPrice.objects.filter(
-                subscription = self.subscription,
-                interval = self.interval
-            ).exclude(id=self.id)
-            qs.update(featured=False)
+            super().save(update_fields=["stripe_id"])

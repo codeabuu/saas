@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+
+{% block head_title %}Your subs - {{ block.super }}{% endblock head_title %}
+
+
+{% block content %}
+{%if subscription.is_active_status%}
+<h1 class="text-lg font-medium">Sure you want to cancel your sub?</h1>
+
+<form action="" method="POST">{%csrf_token%}
+    <button type="submit">CANCEL</button>
+</form>
+<a href="{{subscription.get_absolute_url}}">No, go back</a>
+{%else%}
+<h1 class="text-lg font-medium">No active account found for this user</h1>
+{%endif%}
+{% endblock content %}

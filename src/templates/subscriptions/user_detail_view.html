@@ -11,6 +11,8 @@
     <button type="submit">Refresh</button>
 </form>
 
+<a href="{{subscription.get_cancel_url}}">Cancel membership</a>
+
 <p>Plan name: {{subscription.plan_name}}</p>
 <p>Status: {{subscription.status | title}}</p>
 <p>Start period: {{subscription.current_period_start}}</p>

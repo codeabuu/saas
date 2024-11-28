@@ -24,7 +24,7 @@ def user_subscription_cancel_view(request):
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     if request.method == 'POST':
         if user_sub_obj.stripe_id and user_sub_obj.is_active_status:
-            sub_data = helpers.billing.cancel_subscription(user_sub_obj.stripe_id, reason='sub expired or user terminated', raw=False)
+            sub_data = helpers.billing.cancel_subscription(user_sub_obj.stripe_id, reason='sub expired or user terminated', cancel_at_period_end=True, raw=False)
             for k, v in sub_data.items():
                 setattr(user_sub_obj, k, v)
             user_sub_obj.save()

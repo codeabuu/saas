@@ -10,7 +10,7 @@ from subscriptions import utils as subs_utils
 def user_subscription_view(request):
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     if request.method == "POST":
-        finished = subs_utils.refresh_users_subscriptions(user_ids=[request.user.id])
+        finished = subs_utils.refresh_users_subscriptions(user_ids=[request.user.id], active_only=False)
         if finished:
             messages.success(request, "Plan details have been succesfully refreshed")
         else:

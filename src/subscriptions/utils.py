@@ -1,24 +1,21 @@
 from django.core.management.base import BaseCommand
 from customers.models import Customer
-from subscriptions.models import UserSubscription, Subscription, SubscriptionStatus
+from subscriptions.models import UserSubscription, Subscription, SubscriptionStatus, UserSubscriptionQuerySet
 import helpers.billing
 from django.db.models import Q
 
 
-def refresh_users_subscriptions(user_ids=None):
-    active_qs_lookup = (
-        Q(status=SubscriptionStatus.ACTIVE) |
-        Q(status=SubscriptionStatus.TRIALING)
-    )
+def refresh_users_subscriptions(user_ids=None, active_only=True, verbose=False):
     qs = UserSubscription.objects.all()
-    if isinstance(user_ids, list):
-        qs=qs.filter(user_id__in=user_ids)
-    elif isinstance(user_ids, int):
-        qs=qs.filter(user_id__in=[user_ids])
-    
+    if active_only:
+        qs = qs.by_active_trialing()
+    if user_ids is not None:
+        qs = qs.by_user_ids(user_ids=user_ids)
     complete_count = 0
     qs_count = qs.count()
     for obj in qs:
+        if verbose:
+            print("updating user", obj.user, obj.subscription, obj.current_period_end)
         if obj.stripe_id:
             sub_data = helpers.billing.get_subscription(obj.stripe_id, raw=False)
             for k, v in sub_data.items():

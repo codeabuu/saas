@@ -1,8 +1,8 @@
 # Django SaaS Project
 
-Build the foundations for a Software as a Service business by leveraging Django, Tailwind, htmx, Neon Postgres, Redis, and more.
+This project builds the foundations for a Software as a Service business by leveraging Django, Stripe for payments, Tailwind, htmx, Neon Postgres, Redis, and more.
 
-The goal of this project is to learn how to create a reusable foundation for building SaaS products for your business or startup.
+The goal of this project is to create a reusable foundation for building SaaS products for your business or startup.
 
 ## References
 

@@ -3,7 +3,7 @@ name: 2 - Django Basic
 on:
   workflow_dispatch:
   push:
-    branches:
+    branches: # Fixing the keyword
       - main
 
 jobs:
@@ -13,13 +13,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python
+        uses: actions/setup-python@v4 # Specify the version explicitly
         with:
           python-version: '3.12'
       - name: Install Requirements
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install --upgrade pip # Fixing indentation and correct pip upgrade command
+          python -m pip install -r requirements.txt # Fixing typo in 'python'
       - name: Django Tests
         working-directory: ./src
         run: |

@@ -2,15 +2,16 @@ name: 3 - Django Basic
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
       DJANGO_DEBUG: 0
+      DATABASE_URL: ${{secrets.NEONE_DATABASE_URL}}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

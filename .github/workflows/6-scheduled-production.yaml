@@ -1,23 +1,21 @@
-name: 6 - Django Basic
+name: 5 - Django Basic
 
 on:
   workflow_dispatch:
-  #schedule:
-  # - cron: '0 1,12 * * *'
-  # - cron: '0 4 1 * *'
+  schedule:
+    - cron: '0 1,12 * * *'
+    - cron: '0 4 1 * *'
 
 # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
-
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
       DJANGO_DEBUG: 0
-      #DATABASE_URL: ${{secrets.NEON_DATABASE_URL}}
+      STRIPE_SECRET_KEY: ${{secret.STRIPE_SECRET_KEY}}
       NEON_API_KEY: ${{secrets.NEON_API_KEY}}
       NEON_PROJECT_ID: ${{secrets.NEON_PROJECT_ID}}
       NEON_PROD_BRANCH: "main"
-      NEON_GITHUB_BRANCH: "gh-delete"
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -32,13 +30,9 @@ jobs:
       - name: Install Neon CLI
         run: |
           npm install -g neonctl
-      - name: Delete prev branch
-        continue-on-error: true
-        run: |
-          neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}"
       - name: Create new github actions branch
         run: |
-          neonctl branches create --name"${{env.NEON_GITHUB_BRANCH}}" --parent --project-id "${{env.NEON_PROJECT_ID}}"
+          neonctl branches create --name"${{env.NEON_PROD_BRANCH}}" --parent --project-id "${{env.NEON_PROJECT_ID}}"
       - name: Database URL env val for new github actions branch
         run: |
           MY_NEON_C-ONN_STRING=$(neonctl connection-string --branch "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}")
@@ -51,7 +45,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-      - name: Django Tests
+      - name: Django Users Sync Stripe SUb
+        if: github.event.schedule != '0 4 1 * *'
         working-directory: ./src
         run: |
-          python manage.py test
+          python manage.py sync_user_subs --days-start 0 --day-end 0
+      - name: Django Users Clear dangling Stripe SUb
+        working-directory: ./src
+        if: github.event.schedule == '0 4 1 * *'
+        run: |
+          python manage.py sync_user_subs --clear-dangling

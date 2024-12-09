@@ -124,3 +124,13 @@ python manage.py vendor_pull
 ```
 
 ### Creating Stripe Account
+1. Sign up on [stripe.com](https://dashboard.stripe.com/register)
+2. Get or create a Stripe Secret API Key (Dashboard > Developers > API keys > Secret key )
+3. pdate dotenv (.env) with the value STRIPE_SECRET_KEY with your key.
+
+### Run the server
+```bash
+python manage.py runserver
+```
+
+Ready to roll! 🚀

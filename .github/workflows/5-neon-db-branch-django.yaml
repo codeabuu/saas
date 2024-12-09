@@ -36,7 +36,7 @@ jobs:
           neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}"
       - name: Create new github actions branch
         run: |
-          neonctl branches create --name"${{env.NEON_GITHUB_BRANCH}}" --parent --project-id "${{env.NEON_PROJECT_ID}}"
+          neonctl branches create --name "${{env.NEON_GITHUB_BRANCH}}" --parent "main" --project-id "${{env.NEON_PROJECT_ID}}"
       - name: Database URL env val for new github actions branch
         run: |
           MY_NEON_CONN_STRING=$(neonctl connection-string --branch "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}")

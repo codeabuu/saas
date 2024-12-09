@@ -35,7 +35,7 @@ jobs:
           neonctl branches create --name"${{env.NEON_PROD_BRANCH}}" --parent --project-id "${{env.NEON_PROJECT_ID}}"
       - name: Database URL env val for new github actions branch
         run: |
-          MY_NEON_C-ONN_STRING=$(neonctl connection-string --branch "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}")
+          MY_NEON_CONN_STRING=$(neonctl connection-string --branch "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}")
           echo "DJANGO_URL=$MY_NEON_CONN_STRING" >> $GITHUB_ENV
       - name: Setup Django Secret Key
         run: |

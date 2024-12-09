@@ -1,4 +1,4 @@
-name: 5 - Django Basic
+name: 6 - Scheduled Production Worker
 
 on:
   workflow_dispatch:

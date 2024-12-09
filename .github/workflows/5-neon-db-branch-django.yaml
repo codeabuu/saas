@@ -1,4 +1,4 @@
-name: 4 - Django Basic
+name: 5 - Django Basic
 
 on:
   workflow_dispatch:

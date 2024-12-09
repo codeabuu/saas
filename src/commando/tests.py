@@ -5,8 +5,7 @@ from decouple import config
 
 # Create your tests here.
 
-os.environ["DATABASE_URL"] = config("DATABASE_URL")
 class NeonDBTestCase(TestCase):
     def test_db_url(self):
-        DATABASE_URL=settings.DATABASE_URL
+        DATABASE_URL=os.environ.get("DATABASE_URL")
         self.assertIn("neon.tech", DATABASE_URL)

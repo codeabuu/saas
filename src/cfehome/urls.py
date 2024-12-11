@@ -4,11 +4,10 @@ from .views import home_view, about_view, pw_protected_view, user_only_view, sta
 from auth import views as auth_views
 from subscriptions import views as subscription_views
 from checkouts import views as checkout_views
+from landing import views as landing_views
 
 urlpatterns = [
-    path("", home_view, name='home'), #index page -> root page
-    # path("login/", auth_views.login_view, name='account_login'),
-    # path("register/", auth_views.register_view, name='account_signup'),
+    path("", landing_views.landing_page_view, name='home'),
     path("checkout/sub-price/<int:price_id>/", checkout_views.product_price_redirect_view,
          name="sub-price-checkout"),
     path("checkout/start", checkout_views.checkout_redirect_view,

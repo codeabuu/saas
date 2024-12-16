@@ -5,7 +5,7 @@ from django.conf import settings
 
 STATICFILES_VENDOR_DIR = getattr(settings, 'STATICFILES_VENDOR_DIR')
 VENDOR_STATICFILES = {
-    "saas-theme.min.css": ""
+    "saas-theme.min.css": "https://github.com/codingforentrepreneurs/SaaS-Foundations/blob/main/src/staticfiles/theme/saas-theme.min.css",
     "flowbite.min.css": "https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css",
     "flowbite.min.js": "https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js",
     "flowbite.min.js.map": "https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js.map"
